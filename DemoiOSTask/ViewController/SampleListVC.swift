@@ -19,7 +19,6 @@ enum ModelType {
 
 class SampleListVC: UIViewController {
     
-    
     @IBOutlet weak var navItem: UINavigationItem!
     @IBOutlet weak var sampleTableView: UITableView!
     
@@ -27,7 +26,7 @@ class SampleListVC: UIViewController {
     var modelType: ModelType = .genralCellType
     var model : DataSetModel?
     var titleStr : String?
-    var strArr = [String]()
+    var pointsArr = [String]()
  
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,17 +41,21 @@ class SampleListVC: UIViewController {
 
         DispatchQueue.main.async {
             
-            if self.canOpenURL(self.model?.points) {
+            if Utility.sharedInstance.canOpenURL(self.model?.points) {
+                
                 if self.isValidYoutubeLink(urlStr: self.model?.points ?? "") {
                     self.modelType = .videoCellType
                 }else {
                     self.modelType = .imageCellType
                 }
+                
             } else {
+                
                 let strArr = self.model?.points!.split(separator: "▪")
                 for item in strArr! {
-                    self.strArr.append(String(item))
+                    self.pointsArr.append(String(item))
                 }
+                
                 self.modelType = .genralCellType
             }
   
@@ -63,6 +66,7 @@ class SampleListVC: UIViewController {
             self.sampleTableView.estimatedRowHeight = 60
             self.sampleTableView.rowHeight = UITableView.automaticDimension
             self.sampleTableView.reloadData()
+            
         }
 
     }
@@ -80,12 +84,14 @@ class SampleListVC: UIViewController {
 }
 
 extension SampleListVC: UITableViewDelegate,UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return self.model?.description
     }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.modelType == .genralCellType {
-            return self.strArr.count
+            return self.pointsArr.count
         }else {
             return 1
         }
@@ -93,14 +99,14 @@ extension SampleListVC: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
        
-       
         if self.modelType == .genralCellType {
+            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "textCell") as? TextCell else {
                 return TextCell()
             }
             cell.textLbl?.numberOfLines = 0
             cell.textLbl?.lineBreakMode = .byWordWrapping
-            cell.textLbl?.text = self.strArr[indexPath.row]
+            cell.textLbl?.text = self.pointsArr[indexPath.row]
             cell.textLbl.backgroundColor = .clear
             DispatchQueue.main.async {
                 cell.cardVW?.backgroundColor =  self.colorArr[indexPath.row]
@@ -109,6 +115,7 @@ extension SampleListVC: UITableViewDelegate,UITableViewDataSource {
             return cell
 
         } else if self.modelType == .imageCellType {
+            
                 guard let imgcell = tableView.dequeueReusableCell(withIdentifier: "ImgCellID") as? ImageCell else {
                     return ImageCell()
                 }
@@ -117,6 +124,7 @@ extension SampleListVC: UITableViewDelegate,UITableViewDataSource {
                 return imgcell
                 
         } else {
+            
             guard let videoCell = tableView.dequeueReusableCell(withIdentifier: "VideoCellID") as? VideoCell else {
                 return VideoCell()
             }
@@ -129,9 +137,9 @@ extension SampleListVC: UITableViewDelegate,UITableViewDataSource {
             
             return videoCell
         }
-       
-
+      
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
        
         if self.modelType == .genralCellType {
@@ -150,23 +158,16 @@ extension SampleListVC: UITableViewDelegate,UITableViewDataSource {
         }
         
     }
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return UITableView.automaticDimension
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
     }
     
-    func canOpenURL(_ string: String?) -> Bool {
-        guard let urlString = string,
-            let url = URL(string: urlString)
-            else { return false }
-        
-        if !UIApplication.shared.canOpenURL(url) { return false }
-        
-        let regEx = "((https|http)://)((\\w|-)+)(([.]|[/])((\\w|-)+))+"
-        let predicate = NSPredicate(format:"SELF MATCHES %@", argumentArray:[regEx])
-        return predicate.evaluate(with: string)
-    }
+ 
+    
 }
 

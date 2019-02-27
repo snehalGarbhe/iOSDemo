@@ -17,33 +17,46 @@ class VideoCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         wkWebKit.navigationDelegate = self
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
  
 }
 
 extension VideoCell : WKNavigationDelegate {
+    
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print(#function)
-        self.activityIndicator.stopAnimating()
-        self.activityIndicator.hidesWhenStopped = true
+        self.hideActivityIndicator()
     }
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print(#function)
-        self.activityIndicator.startAnimating()
+        self.showActivityIndicator()
+
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print(#function)
-        self.activityIndicator.stopAnimating()
-        self.activityIndicator.hidesWhenStopped = true
+         self.hideActivityIndicator()
     }
+    
+    
+    //MARK:- show Hide Activity Indicator
+    
+    private func showActivityIndicator() {
+        DispatchQueue.main.async {
+            self.activityIndicator.startAnimating()
+            self.activityIndicator.hidesWhenStopped = false
+        }
+    }
+    
+    private func hideActivityIndicator() {
+        DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.hidesWhenStopped = true
+        }
+    }
+    
 }

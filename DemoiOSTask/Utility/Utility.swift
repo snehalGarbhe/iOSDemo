@@ -8,6 +8,26 @@
 
 import Foundation
 import  UIKit
+
+class Utility: NSObject {
+    
+    static let sharedInstance = Utility()
+    private override init() {}
+    
+    func canOpenURL(_ string: String?) -> Bool {
+        guard let urlString = string,
+            let url = URL(string: urlString)
+            else { return false }
+        
+        if !UIApplication.shared.canOpenURL(url) { return false }
+        
+        let regEx = "((https|http)://)((\\w|-)+)(([.]|[/])((\\w|-)+))+"
+        let predicate = NSPredicate(format:"SELF MATCHES %@", argumentArray:[regEx])
+        return predicate.evaluate(with: string)
+    }
+}
+
+
 extension UIColor {
     convenience init(hexString: String, alpha: CGFloat = 1.0) {
         let hexString: String = hexString.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
@@ -36,4 +56,5 @@ extension UIColor {
         return String(format:"#%06x", rgb)
     }
 }
+
 

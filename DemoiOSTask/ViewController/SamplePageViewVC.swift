@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class SamplePageViewVC: UIViewController {
+class SamplePageViewVC: BaseVC {
 
     var dataSetArr: [DataSetModel] = [DataSetModel(title: "This is title", description: "This is short description", points: """
 this is long long long long long long long long long long long long long description
@@ -44,13 +44,18 @@ long long long long long long description 4
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setUp()
+    }
+    
+    //MARK:- SETUP UI
+    private func setUp() {
         
         self.view.backgroundColor = .white
-        pageController = UIPageViewController(transitionStyle: UIPageViewController.TransitionStyle.pageCurl, navigationOrientation: UIPageViewController.NavigationOrientation.horizontal, options: [:])
+        pageController = UIPageViewController(transitionStyle: UIPageViewController.TransitionStyle.scroll, navigationOrientation: UIPageViewController.NavigationOrientation.horizontal, options: [:])
         pageController.delegate = self
         pageController.dataSource = self
         
-        let viewCOntrollr = UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "sampleVCID") as! SampleListVC
+        let viewCOntrollr = BaseVC.vcFactory(StoryBoardConst.mainSB, SBVC: StoryBoardConst.simplePageVC) as! SampleListVC
         viewCOntrollr.titleStr = self.dataSetArr.first?.title
         viewCOntrollr.modelType = .genralCellType
         viewCOntrollr.model = self.dataSetArr.first
@@ -58,6 +63,7 @@ long long long long long long description 4
         addChild(pageController)
         view.addSubview(pageController.view)
         pageController.didMove(toParent: self)
+        
     }
     
 }
@@ -69,7 +75,7 @@ extension SamplePageViewVC: UIPageViewControllerDelegate,UIPageViewControllerDat
         let modelObj = (viewController as? SampleListVC)?.model
         let currentIndex = dataSetArr.index(where: { $0.title == modelObj?.title })
         if currentIndex! > 0 {
-            let vc = UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "sampleVCID") as! SampleListVC
+            let vc = BaseVC.vcFactory(StoryBoardConst.mainSB, SBVC: StoryBoardConst.simplePageVC) as! SampleListVC
             vc.model = self.dataSetArr[currentIndex!-1]
             vc.titleStr = self.dataSetArr[currentIndex!-1].title
             return vc
@@ -83,7 +89,7 @@ extension SamplePageViewVC: UIPageViewControllerDelegate,UIPageViewControllerDat
         let modelObj = (viewController as? SampleListVC)?.model
         let currentIndex = dataSetArr.index(where: { $0.title == modelObj?.title })
         if currentIndex! < self.dataSetArr.count - 1 {
-            let vc = UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "sampleVCID") as! SampleListVC
+            let vc = BaseVC.vcFactory(StoryBoardConst.mainSB, SBVC: StoryBoardConst.simplePageVC) as! SampleListVC
             vc.model = self.dataSetArr[currentIndex!+1]
             vc.titleStr = self.dataSetArr[currentIndex!+1].title
             return vc
