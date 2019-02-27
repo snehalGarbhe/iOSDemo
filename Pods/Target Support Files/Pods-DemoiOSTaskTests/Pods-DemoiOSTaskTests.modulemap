@@ -1,0 +1,6 @@
+framework module Pods_DemoiOSTaskTests {
+  umbrella header "Pods-DemoiOSTaskTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
